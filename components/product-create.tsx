@@ -18,6 +18,7 @@ export function ProductCreate() {
   // State to manage validation errors
   const [nameError, setNameError] = useState(false)
   const [priceError, setPriceError] = useState(false);
+  const [categoryError, setCategoryError] = useState(false); 
   
   // Router instance for navigation
   const router = useRouter();
@@ -53,10 +54,45 @@ export function ProductCreate() {
         setPriceError(false);
       }
     }
+
+    else if (name === "Category") {
+      const categoryValue = parseInt(value, 10);
+      if (isNaN(categoryValue) || categoryValue < 1 || categoryValue > 3) {
+        setCategoryError(true);
+      } else {
+        setCategoryError(false);
+      }
+    }
   };
 
   // Handle the product creation
   const handleCreate = async () => {
+
+    let hasError = false;
+
+    if (product.Name.trim() === "") {
+      setNameError(true);
+      hasError = true;
+    } else {
+      setNameError(false);
+    }
+  
+    if (isNaN(product.Price) || product.Price <= 0) {
+      setPriceError(true);
+      hasError = true;
+    } else {
+      setPriceError(false);
+    }
+  
+    if (isNaN(product.Category) || product.Category < 1 || product.Category > 3) {
+      setCategoryError(true); // Show category error
+      hasError = true;
+    } else {
+      setCategoryError(false);
+    }
+  
+    if (hasError) return;
+
     try {
       const newProduct = {
         Name: product.Name,
@@ -153,7 +189,9 @@ export function ProductCreate() {
               max={3}
               value={product.Category}
               onChange={handleInputChange}
+              className={categoryError ? "border-red-500" : ""} // Add error class
             />
+            {categoryError && <p className="text-red-500 text-sm">Category must be between 1 and 3</p>} {/* Display error */}
           </div>
           {/* Input for product price */}
           <div className="space-y-2">

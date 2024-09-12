@@ -20,6 +20,7 @@ export function ProductView() {
   // State to manage input validation errors
   const [nameError, setNameError] = useState(false)
   const [priceError, setPriceError] = useState(false);
+  const [categoryError, setCategoryError] = useState(false); 
   
   // Hook to get router instance for navigation
   const router = useRouter();
@@ -65,12 +66,21 @@ export function ProductView() {
         setPriceError(false);
       }
     }
+
+    // Validate the Category field
+    else if (name === "Category") {
+      const categoryValue = parseInt(value, 10);
+      if (isNaN(categoryValue) || categoryValue < 1 || categoryValue > 3) {
+        setCategoryError(true);
+      } else {
+        setCategoryError(false);
+      }
+    }
   };
 
   // Save product changes to the API
   const handleSave = async () => {
     let hasError = false;
-    console.log(product);
   
     // Validate 'Name' and 'Price'
     if (product.Name.trim() === "") {
@@ -85,6 +95,13 @@ export function ProductView() {
       hasError = true;
     } else {
       setPriceError(false);
+    }
+
+    if (isNaN(product.Category) || product.Category < 1 || product.Category > 3) {
+      setCategoryError(true); // Show category error
+      hasError = true;
+    } else {
+      setCategoryError(false);
     }
   
     if (hasError) return;
@@ -225,7 +242,9 @@ export function ProductView() {
               max={3}
               value={product.Category}
               onChange={handleInputChange}
+              className={categoryError ? "border-red-500" : ""}
             />
+            {categoryError && <p className="text-red-500 text-sm">Category must be between 1 and 3</p>} {/* Display error */}
           </div>
           <div className="space-y-2">
             <Label htmlFor="price">Price</Label>
